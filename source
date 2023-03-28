@@ -1,0 +1,160 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Grass Cutter Game</title>
+	<style>
+		canvas {
+			border: 1px solid #d3d3d3;
+			background-color: #f1f1f1;
+		}
+    /* You can remove this definition unless you plan to use it later */
+.player {
+	width: 5px;
+	height: 5px;
+	background-color: red;
+	position: absolute;
+}
+	</style>
+</head>
+<body>
+	<div id="gameContainer">
+		<canvas id="gameCanvas"></canvas>
+		<script>// Define the canvas and its context
+var canvas = document.getElementById("gameCanvas");
+var context = canvas.getContext("2d");
+
+// Define the game objects
+var player = {
+  x: 0,
+  y: 0,
+  width: 50,
+  height: 50,
+  color: "blue"
+};
+
+var grass = {
+  width: 50,
+  height: 50,
+  color: "green"
+};
+
+// Define the game variables
+var score = 0;
+var speed = 5;
+
+// Set up the game loop
+setInterval(gameLoop, 1000 / 60);
+
+function gameLoop() {
+  // Move the player based on keyboard input or touch events
+  document.addEventListener("keydown", movePlayer);
+
+  // Clear the canvas
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the grass
+  for (var i = 0; i < canvas.width / grass.width; i++) {
+    for (var j = 0; j < canvas.height / grass.height; j++) {
+      context.fillStyle = grass.color;
+      context.fillRect(i * grass.width, j * grass.height, grass.width, grass.height);
+    }
+  }
+
+  // Draw the player
+  context.fillStyle = player.color;
+  context.fillRect(player.x, player.y, player.width, player.height);
+
+  // Cut the grass
+  function cutGrass() {
+    var playerRow = Math.floor(player.y / grass.height);
+    var playerColumn = Math.floor(player.x / grass.width);
+    var grassRow = Math.floor(Math.random() * canvas.height / grass.height);
+    var grassColumn = Math.floor(Math.random() * canvas.width / grass.width);
+
+    if (playerRow === grassRow && playerColumn === grassColumn) {
+      score++;
+    }
+  }
+
+  // Move the player
+  function movePlayer(event) {
+    switch (event.key) {
+      case "ArrowUp":
+        player.y -= speed;
+        cutGrass();
+        break;
+      case "ArrowDown":
+        player.y += speed;
+        cutGrass();
+        break;
+      case "ArrowLeft":
+        player.x -= speed;
+        cutGrass();
+        break;
+      case "ArrowRight":
+        player.x += speed;
+        cutGrass();
+        break;
+      default:
+        break;
+    }
+  }
+
+  // Update the score
+  document.getElementById("score").innerHTML = "Score: " + score;
+}
+// Cut the grass
+function cutGrass() {
+  var playerRow = Math.floor(player.y / grass.height);
+  var playerColumn = Math.floor(player.x / grass.width);
+  
+  if (grassGrid[playerRow][playerColumn]) {
+    grassGrid[playerRow][playerColumn] = false;
+    score++;
+    if (score === winningScore) {
+      alert("Congratulations, you won!");
+      restart();
+    }
+  }
+}
+
+// Move the player based on keyboard input or touch events
+function movePlayer(event) {
+  switch (event.keyCode) {
+    case 37: // left arrow
+      player.moveLeft();
+      break;
+    case 38: // up arrow
+      player.moveUp();
+      break;
+    case 39: // right arrow
+      player.moveRight();
+      break;
+    case 40: // down arrow
+      player.moveDown();
+      break;
+    default:
+      break;
+  }
+}
+
+document.addEventListener("keydown", movePlayer);
+
+// Restart the game
+function restart() {
+  location.reload();
+}
+
+// Game loop
+function gameLoop() {
+  draw();
+  cutGrass();
+  requestAnimationFrame(gameLoop);
+}
+
+// Start the game loop
+gameLoop();
+</script>
+	</div>
+</body>
+</html>
